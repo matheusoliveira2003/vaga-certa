@@ -13,3 +13,95 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Employee {
+  id        Int       @id @default(autoincrement())
+  fullName  String
+  cpf       String    @unique
+  email     String    @unique 
+  role      Role      @relation(fields: [roleId], references: [id])
+  roleId    Int
+  birthdate DateTime?
+  phone     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Role {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  Employees Employee[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Receipt {
+  id              Int           @id @default(autoincrement())
+  user            Int
+  price           Decimal
+  paymentMethod   paymentMethod @relation(fields: [paymentMethodId], references: [id])
+  paymentMethodId Int
+  cameIn          DateTime
+  cameOut         DateTime
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model paymentMethod {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  Receipt   Receipt[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Spot {
+  id         Int          @id @default(autoincrement())
+  category   SpotCategory @relation(fields: [categoryId], references: [id]) 
+  categoryId Int    
+  status     Boolean
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+}
+model SpotCategory {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  Spot      Spot[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  fullName  String
+  cpf       String    @unique
+  email     String    @unique
+  password  String
+  birthdate DateTime?  
+  phone     String?
+  Vehicle   Vehicle[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Vehicle {
+  id           Int         @id @default(autoincrement())
+  licensePlate String      @unique
+  type         VehicleType @relation(fields: [typeId], references: [id])
+  typeId       Int
+  owner        User        @relation(fields: [ownerId], references: [id])
+  ownerId      Int    
+  brand        String?
+  model        String?
+  year         Int?
+  color        String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+model VehicleType {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  Vehicle   Vehicle[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
